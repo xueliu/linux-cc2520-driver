@@ -1,4 +1,4 @@
-#include <linux/module.h>  
+#include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/interrupt.h>
 #include <linux/gpio.h>
@@ -17,9 +17,13 @@
 #include "sack.h"
 #include "csma.h"
 #include "unique.h"
+#include "debug.h"
 
-#define DRIVER_AUTHOR "Andrew Robinson <androbin@umich.edu>"
-#define DRIVER_DESC   "A driver for the CC2520 radio. Be afraid."
+#define DRIVER_AUTHOR  "Andrew Robinson <androbin@umich.edu>"
+#define DRIVER_DESC    "A driver for the CC2520 radio."
+#define DRIVER_VERSION "0.5"
+
+uint8_t debug_print;
 
 struct cc2520_state state;
 const char cc2520_name[] = "cc2520";
@@ -48,11 +52,13 @@ int init_module()
 {
 	int err = 0;
 
+	debug_print = DEBUG_PRINT_INFO;
+
 	setup_bindings();
 
 	memset(&state, 0, sizeof(struct cc2520_state));
-	
-	INFO((KERN_INFO "loading CC2520 Kernel Module v0.01...\n"));
+
+	INFO((KERN_INFO "[CC2520] - Loading kernel module v%s\n", DRIVER_VERSION));
 
 	err = cc2520_plat_gpio_init();
 	if (err) {
@@ -69,7 +75,7 @@ int init_module()
 	err = cc2520_interface_init();
 	if (err) {
 		ERR((KERN_ALERT "[cc2520] - char driver error. aborting.\n"));
-		goto error5;      
+		goto error5;
 	}
 
 	err = cc2520_radio_init();
@@ -121,7 +127,7 @@ int init_module()
 	error6:
 		cc2520_plat_gpio_free();
 	error7:
-		return 1;
+		return -1;
 }
 
 void cleanup_module()
@@ -130,7 +136,7 @@ void cleanup_module()
 	cc2520_interface_free();
 	cc2520_plat_gpio_free();
 	cc2520_plat_spi_free();
-	INFO((KERN_INFO "Unloading CC2520 Kernel Module...\n"));
+	INFO((KERN_INFO "[cc2520] - Unloading kernel module\n"));
 }
 
 MODULE_LICENSE("GPL");
