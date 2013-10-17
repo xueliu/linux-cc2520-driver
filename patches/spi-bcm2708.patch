@@ -283,8 +283,8 @@ index 088cbaa..661a4cb 100644
 +
 +	/* and wake up the thread to continue its work - returning ...*/
 +	complete(&bs->done);
-+ 	/* return IRQ handled */
-+ 	return IRQ_HANDLED;
++	/* return IRQ handled */
++	return IRQ_HANDLED;
 +}
  
 -	cs = stp->cs | SPI_CS_INTR | SPI_CS_INTD | SPI_CS_TA;
@@ -676,8 +676,8 @@ index 088cbaa..661a4cb 100644
 +		if (status)
 +			goto exit;
 +		/* delay if given */
-+	        if (xfer->delay_usecs)
-+        	        udelay(xfer->delay_usecs);
++	if (xfer->delay_usecs)
++			udelay(xfer->delay_usecs);
 +		/* and add up the result */
 +		msg->actual_length += xfer->len;
 +	}
